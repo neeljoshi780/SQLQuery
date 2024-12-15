@@ -1,0 +1,93 @@
+create database gvp_neel;
+use gvp_neel;
+
+create table s(
+s_no char(3) primary key,
+s_name varchar(50),
+s_status int,
+s_city varchar(25)
+);
+
+insert into s values('s1',"Smith",20,"London"),
+('s2',"Jones",10,"Paris"),
+('s3',"Blake",10,"Paris"),
+('s4',"Clark",20,"London"),
+('s5',"Adams",30,"Athens");
+
+create table p(
+p_no char(3) primary key,
+p_name varchar(20),
+color varchar(10),
+weight float(5.2),
+p_city varchar(25)
+);
+
+insert into p values('p1',"Nut","Red",12.0,"London"),
+('p2',"Bolt","Green",17.0,"Paris"),
+('p3',"Screw","Blue",17.0,"Oslo"),
+('p4',"Screw","Red",14.0,"London"),
+('p5',"Cam","Blue",12.0,"Paris"),
+('p6',"Cog","Red",19.0,"London");
+
+create table sp(
+s_no char(3),
+p_no char(3),
+qty int,
+primary key(s_no,p_no),
+foreign key(s_no) references s(s_no),
+foreign key(p_no) references p(p_no)
+);
+
+insert into sp values('s1','p1',300),
+('s1','p2',200),
+('s1','p3',400),
+('s1','p4',200),
+('s1','p5',100),
+('s1','p6',100),
+('s2','p1',300),
+('s2','p2',400),
+('s3','p2',200),
+('s4','p2',200),
+('s4','p4',300),
+('s4','p5',400);
+
+#1. Show all parts located at Londan city. 
+select * from p where p_city="London";
+
+#2. Show maximum weight part name.
+select p_name from p order by weight desc limit 1;
+
+
+#3. Show all parts name , part number for part color = Red.
+select p_no,p_name from p where color="Red";
+
+#4. Show suppler name , suppler city who supply part qty more then 200.
+select distinct s.s_name,s.s_city from s,sp where s.s_no=sp.s_no and sp.qty>200;
+
+#5.Show second highest weight of part.
+select weight from p order by weight desc limit 1 offset 1; #Extra query for seme weight find
+select weight from p where weight=(select weight from p order by weight desc limit 1 offset 1);
+
+#6. Show suppler no and qty for part supply for highest weight part.
+select sp.s_no,sp.qty from sp,p where p.p_no=sp.p_no order by p.weight desc limit 1;
+
+#7. Show suppler name and qty for part color is "Red" supply.
+select s.s_name,sp.qty from s,sp,p where s.s_no=sp.s_no and p.p_no=sp.p_no and p.color="Red";
+
+#8. Show suppler name , part city and qty for suppler status is less then 30 shipment supply.
+select s.s_name,p.p_city,sp.qty from s,p,sp where s.s_no=sp.s_no and p.p_no=sp.p_no and s.s_status<30;
+
+#9. Show each supplers total qty supply.
+select s_no, sum(sp.qty) from sp group by s_no;
+
+#10. Show each parts total qty supply.
+select p_no, sum(sp.qty) from sp group by p_no;
+
+#11. Show each part names total qty supply.
+select p.p_name,sum(sp.qty) from p,sp where p.p_no=sp.p_no group by p.p_name;
+
+#12. Show each suppers whose suppler number is less then 's4' give total qty supply by each suppler.
+select s_no, sum(sp.qty) from sp where s_no<'s4' group by s_no;
+
+#13. Show each suppers whose suppler status is 20 give total qty supply by each suppler.
+select s.s_no,s.s_status, sum(sp.qty) from s,sp where s.s_status=20 and s.s_no = sp.s_no group by s.s_no;
