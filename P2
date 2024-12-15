@@ -1,0 +1,47 @@
+create table dept(
+dept_id int primary key,
+dept_name varchar(30),
+dept_location varchar(50)
+);
+insert into dept values(1,"Computer","Ahmedabad"),
+(2,"Microbiology","Sadra"),
+(3,"Management","Randheja"),
+(4,"MainOffice","Ahmedabad");
+
+create table emp(
+emp_id int primary key,
+emp_name varchar(35),
+emp_dept_id int,
+emp_boss_id int,
+emp_salary bigint,
+foreign key(emp_dept_id) references dept(dept_id)
+);
+insert into emp values(101,"Nikhil",1,401,200000),
+(102,"Satish",1,101,210000),
+(103,"Vrushali",1,101,175000),
+(201,"Archna",2,401,200000),
+(202,"Tanvi",2,201,135000),
+(203,"Dharti",2,201,175000),
+(301,"Hemali",3,401,235000),
+(302,"Vishal",3,301,180000),
+(303,"Nafish",3,302,199000),
+(401,"Registar",4,401,500000),
+(402,"Bipin",4,401,490000),
+(403,"Narendra",4,402,1000000),
+(404,"Mohan",4,402,800000);
+
+#1. Show Employee name, employee department name, Boss name, Boss department name.
+select emp.emp_name as Employee_Name,dept.dept_name as Employee_Department,bossname.emp_name as Boss_Name,bossd.dept_name as Boss_Department from
+emp,dept,emp as bossname,dept as bossd where
+emp.emp_dept_id=dept.dept_id and emp.emp_boss_id=bossname.emp_id and bossname.emp_dept_id=bossd.dept_id;
+
+#2. Show Employee name, employee department name, Boss name, Boss department name where employee salary greter then boss salary.
+select emp.emp_name as Employee_Name,dept.dept_name as Employee_Department, emp.emp_salary as emp_Salary, bossname.emp_name as Boss_Name,bossd.dept_name as Boss_Department,bossname.emp_salary from
+emp,dept,emp as bossname,dept as bossd where
+emp.emp_dept_id=dept.dept_id and emp.emp_boss_id=bossname.emp_id and bossname.emp_dept_id=bossd.dept_id and emp.emp_salary>bossname.emp_salary;
+
+3.Show Department name and that department maximum salary.
+select dept.dept_name,max(emp.emp_salary) from dept,emp where dept.dept_id = emp.emp_dept_id group by dept.dept_id;
+
+4. Show employee department name, that department total employee count.
+select dept.dept_name,count(emp.emp_id) from dept,emp where dept.dept_id = emp.emp_dept_id group by dept.dept_id;
