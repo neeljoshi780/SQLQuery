@@ -1,3 +1,5 @@
+use gvp_neel;
+
 create table dept(
 dept_id int primary key,
 dept_name varchar(30),
